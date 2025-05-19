@@ -142,13 +142,6 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "tgw_attachment" {
   }
 }
 
-# Add default route from dev route table to inspection VPC
-resource "aws_ec2_transit_gateway_route" "dev_default_route" {
-  provider                       = aws.delegated_account_us-west-2
-  destination_cidr_block         = "0.0.0.0/0"
-  transit_gateway_attachment_id  = aws_ec2_transit_gateway_vpc_attachment.inspection_attachment.id
-  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.dev_tgw_rt.id
-}
 # Associate with the transit gateway route table
 resource "aws_ec2_transit_gateway_route_table_association" "tgw_rt_association" {
   provider                       = aws.delegated_account_us-west-2
