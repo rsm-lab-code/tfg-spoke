@@ -12,21 +12,7 @@ resource "aws_vpc" "vpc_west" {
   }
 }
 
-# Create VPC in us-east-1 using nonproduction pool
-resource "aws_vpc" "vpc_east" {
-  provider = aws.delegated_account_us-east-1
-  
-  # Use IPAM pool for IP assignment
-  ipv4_ipam_pool_id   = var.ipam_pool_ids["us-east-1-nonprod"]
-  ipv4_netmask_length = 21
-  
-  tags = {
-    Name = var.vpc_names["us-east-1"]
-    Environment = "NonProduction"
-  }
-}
-
-# Create two subnets in us-west-2 VPC
+# Create four subnets in us-west-2 VPC
 resource "aws_subnet" "subnet_west" {
   count = 4
   provider = aws.delegated_account_us-west-2
