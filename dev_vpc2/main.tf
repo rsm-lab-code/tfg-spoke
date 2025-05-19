@@ -1,12 +1,12 @@
 # Get IPAM pool allocation for dev_vpc2
-resource "aws_vpc_ipam_pool_cidr_allocation" "vpc_cidr" {
+resource "aws_vpc_ipam_pool_cidr_allocation" "dev_vpc2_cidr" {
   provider       = aws.delegated_account_us-west-2
   ipam_pool_id   = var.ipam_pool_ids["us-west-2-nonprod-subnet1"]
-  netmask_length = var.vpc_cidr_netmask
+  netmask_length = 24
+  #netmask_length = var.vpc_cidr_netmask
   description    = "CIDR allocation for ${var.vpc_name}"
 }
 
-# Create the VPC
 resource "aws_vpc" "dev_vpc2" {
   provider             = aws.delegated_account_us-west-2
   cidr_block           = aws_vpc_ipam_pool_cidr_allocation.dev_vpc2_cidr.cidr
@@ -17,7 +17,6 @@ resource "aws_vpc" "dev_vpc2" {
     Name = "dev-vpc2"
   }
 }
-
 # Create public subnets
 resource "aws_subnet" "dev_vpc2_public_subnet_a" {
   provider          = aws.delegated_account_us-west-2
