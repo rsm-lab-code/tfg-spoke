@@ -1,51 +1,49 @@
 variable "aws_regions" {
+  description = "List of AWS regions for deploying resources"
   type        = list(string)
-  description = "List of AWS regions for VPC creation"
   default     = ["us-west-2", "us-east-1"]
 }
 
-variable "vpc_names" {
-  description = "Names for the VPCs in each region"
-  type        = map(string)
-  default = {
-    "us-west-2" = "dev-vpc1"
-  }
+variable "vpc_name" {
+  description = "Name of the VPC"
+  type        = string
+  default     = "dev-vpc1"
 }
 
-variable "subnet_names" {
-  description = "Names for the subnets in each VPC"
-  type        = map(list(string))
-  default = {
-    "us-west-2" = ["prod-subnet-1", "prod-subnet-2"]
-    "us-east-1" = ["nonprod-subnet-1", "nonprod-subnet-2"]
-  }
+variable "delegated_account_id" {
+  description = "AWS Account ID for delegated account where VPC is created"
+  type        = string
 }
 
 variable "ipam_pool_ids" {
-  description = "IDs of IPAM pools to use for each VPC"
+  description = "IDs of subnet pools from IPAM"
   type        = map(string)
 }
 
-variable "create_nat_gateway" {
-  description = "Whether to create NAT Gateways"
-  type        = bool
-  default     = true
+variable "vpc_cidr_netmask" {
+  description = "Netmask for the VPC CIDR allocation"
+  type        = number
+  default     = 21  # /21 subnet
 }
 
-variable "create_internet_gateway" {
-  description = "Whether to create Internet Gateways"
-  type        = bool
-  default     = true
+variable "subnet_prefix" {
+  description = "Additional bits for subnet CIDR division within VPC"
+  type        = number
+  default     = 3  # This will create /24 subnets inside a /21 VPC
 }
 
-variable "public_subnet_indices" {
-  description = "Indices of the subnets that should be public (have route to IGW)"
-  type        = list(number)
-  default     = [0][1]  # By default, first & second subnet is public
+variable "transit_gateway_id" {
+  description = "ID of the Transit Gateway to attach to"
+  type        = string
 }
 
-variable "private_subnet_indices" {
-  description = "Indices of the subnets that should be private (have route to NAT)"
-  type        = list(number)
-  default     = [2][30  # By default, third & fourth subnet is private
+variable "transit_gateway_route_table_id" {
+  description = "ID of the Transit Gateway route table for workload VPCs"
+  type        = string
+}
+
+variable "environment" {
+  description = "Environment type (prod, nonprod, dev)"
+  type        = string
+  default     = "dev"
 }
