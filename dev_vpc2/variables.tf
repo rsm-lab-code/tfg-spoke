@@ -26,6 +26,13 @@ variable "subnet_prefix" {
   default     = 4
 }
 
+variable "vpc_name" {
+  description = "Name of the VPC"
+  type        = string
+  default     = "dev-vpc1"
+}
+
+
 variable "transit_gateway_id" {
   description = "ID of the Transit Gateway to attach to"
   type        = string
