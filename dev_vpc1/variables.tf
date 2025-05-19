@@ -23,13 +23,13 @@ variable "ipam_pool_ids" {
 variable "vpc_cidr_netmask" {
   description = "Netmask for the VPC CIDR allocation"
   type        = number
-  default     = 21  # /21 subnet
+  default     = 23  # /23 subnet
 }
 
 variable "subnet_prefix" {
   description = "Additional bits for subnet CIDR division within VPC"
   type        = number
-  default     = 3  # This will create /24 subnets inside a /21 VPC
+  default     = 4  # This will create /27 subnets inside a /23 VPC
 }
 
 variable "transit_gateway_id" {
