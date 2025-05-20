@@ -3,6 +3,11 @@ output "vpc_id" {
   value       = aws_vpc.vpc.id
 }
 
+output "dev_vpc1_cidr" {
+  description = "CIDR block of the created VPC"
+  value       = aws_vpc.vpc.cidr_block
+}
+
 output "vpc_cidr" {
   description = "CIDR block of the created VPC"
   value       = aws_vpc.vpc.cidr_block
