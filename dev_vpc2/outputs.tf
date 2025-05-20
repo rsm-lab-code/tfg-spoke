@@ -3,7 +3,7 @@ output "vpc_id" {
   value       = aws_vpc.dev_vpc2.id
 }
 
-output "vpc_cidr" {
+output "dev_vpc2_cidr" {
   description = "CIDR block of the created VPC"
   value       = aws_vpc.dev_vpc2.cidr_block
 }
