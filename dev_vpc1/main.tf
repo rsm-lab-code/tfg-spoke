@@ -83,6 +83,16 @@ resource "aws_route_table" "private_rt" {
   }
 }
 
+####dummy"""
+
+resource "aws_route" "inspection_public_rt_a_to_dev_vpc1" {
+  provider               = aws.delegated_account_us-west-2
+  route_table_id         = module.inspection_vpc.public_route_table_ids[0]
+  destination_cidr_block = module.vpc.vpc_cidr
+  vpc_endpoint_id        = module.network_firewall.firewall_endpoint_ids[0]
+  depends_on             = [module.vpc, module.network_firewall]
+}
+
 # Associate subnets with route tables
 resource "aws_route_table_association" "public_rta_a" {
   provider       = aws.delegated_account_us-west-2
