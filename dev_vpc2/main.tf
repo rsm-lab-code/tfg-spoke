@@ -146,13 +146,6 @@ resource "aws_ec2_transit_gateway_route_table_association" "dev_vpc2_tgw_rt_asso
   transit_gateway_route_table_id = var.transit_gateway_route_table_id
 }
 
-# Propagate routes to the transit gateway route table
-#resource "aws_ec2_transit_gateway_route_table_propagation" "dev_vpc2_tgw_rt_propagation" {
- # provider                       = aws.delegated_account_us-west-2
-  #transit_gateway_attachment_id  = aws_ec2_transit_gateway_vpc_attachment.dev_vpc2_tgw_attachment.id
-  #transit_gateway_route_table_id = var.transit_gateway_route_table_id
-#}
-
 # Add default route to TGW in the private route table
 resource "aws_route" "dev_vpc2_private_rt_default" {
   provider               = aws.delegated_account_us-west-2

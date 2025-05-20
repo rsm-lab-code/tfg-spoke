@@ -158,10 +158,10 @@ resource "aws_route" "private_rt_default" {
 }
 
 # Add local route for VPC CIDR
-resource "aws_route" "private_rt_local" {
-  provider               = aws.delegated_account_us-west-2
-  count                  = 0  # Disabled as AWS provides this route automatically
-  route_table_id         = aws_route_table.private_rt.id
-  destination_cidr_block = aws_vpc.vpc.cidr_block
-  gateway_id             = "local"
-}
+#resource "aws_route" "private_rt_local" {
+# provider               = aws.delegated_account_us-west-2
+# count                  = 0  # Disabled as AWS provides this route automatically
+# route_table_id         = aws_route_table.private_rt.id
+# destination_cidr_block = aws_vpc.vpc.cidr_block
+# gateway_id             = "local"
+#}
