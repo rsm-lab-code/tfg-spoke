@@ -158,8 +158,8 @@ resource "aws_route" "private_rt_default" {
 }
 #Create Propagation
 
-resource "aws_ec2_transit_gateway_route_table_propagation" "tgw_rt_propagation" {
-  provider                       = aws.delegated_account_us-west-2
-  transit_gateway_attachment_id  = aws_ec2_transit_gateway_vpc_attachment.tgw_attachment.id  
-  transit_gateway_route_table_id = var.transit_gateway_route_table_id
-}
+#resource "aws_ec2_transit_gateway_route_table_propagation" "tgw_rt_propagation" {
+# provider                       = aws.delegated_account_us-west-2
+# transit_gateway_attachment_id  = aws_ec2_transit_gateway_vpc_attachment.tgw_attachment.id  
+# transit_gateway_route_table_id = var.transit_gateway_route_table_id
+#}

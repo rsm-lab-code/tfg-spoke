@@ -48,6 +48,7 @@ variable "environment" {
   default     = "dev"
 }
 
+##### NEW CODE
 variable "dev_vpc1_cidr" {
   description = "Development VPC CIDR 1"
   type        = string
