@@ -156,6 +156,22 @@ resource "aws_route" "private_rt_default" {
   destination_cidr_block = "0.0.0.0/0"
   transit_gateway_id     = var.transit_gateway_id
 }
+
+# Add routes to other spoke VPCs via Transit Gateway in public route table
+resource "aws_route" "public_rt_to_spoke_vpcs" {
+  provider               = aws.delegated_account_us-west-2
+  for_each              = var.spoke_vpc_routes
+  
+  route_table_id         = aws_route_table.public_rt.id
+  destination_cidr_block = each.value
+  transit_gateway_id     = var.transit_gateway_id
+
+  depends_on = [
+    aws_route_table.public_rt,
+    aws_ec2_transit_gateway_vpc_attachment.tgw_attachment
+  ]
+}
+
 #Create Propagation
 
 #resource "aws_ec2_transit_gateway_route_table_propagation" "tgw_rt_propagation" {
