@@ -166,6 +166,6 @@ resource "aws_route" "public_rt_to_spoke_vpcs" {
 
   depends_on = [
     aws_route_table.nonprod_vpc1_public_rt,
-    aws_ec2_transit_gateway_vpc_attachment.tgw_attachment
+    aws_ec2_transit_gateway_vpc_attachment.nonprod_vpc1_tgw_attachment
   ]
 }
