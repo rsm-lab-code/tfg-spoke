@@ -160,7 +160,7 @@ resource "aws_route" "public_rt_to_spoke_vpcs" {
   provider               = aws.delegated_account_us-west-2
   for_each              = var.spoke_vpc_routes
 
-  route_table_id         = aws_route_table.public_rt.id
+  route_table_id         = aws_route_table.nonprod_vpc1_public_rt.id
   destination_cidr_block = each.value
   transit_gateway_id     = var.transit_gateway_id
 
