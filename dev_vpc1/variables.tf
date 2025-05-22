@@ -37,10 +37,10 @@ variable "transit_gateway_id" {
   type        = string
 }
 
-#variable "transit_gateway_route_table_id" {
-  #description = "ID of the Transit Gateway route table for workload VPCs"
-  #type        = string
-  #}
+variable "transit_gateway_route_table_id" {
+  description = "ID of the Transit Gateway route table for workload VPCs"
+  type        = string
+  }
 
 variable "environment" {
   description = "Environment type (prod, nonprod, dev)"

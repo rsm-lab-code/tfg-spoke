@@ -38,10 +38,10 @@ variable "transit_gateway_id" {
   type        = string
 }
 
-#variable "transit_gateway_route_table_id" {
-# description = "ID of the Transit Gateway route table for workload VPCs"
-# type        = string
-#}
+variable "transit_gateway_route_table_id" {
+ description = "ID of the Transit Gateway route table for workload VPCs"
+ type        = string
+}
 
 variable "spoke_vpc_routes" {
   description = "Map of other spoke VPC names to their CIDR blocks for routing"
