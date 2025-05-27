@@ -1,7 +1,8 @@
 # Get IPAM pool allocation for dev_vpc2
 resource "aws_vpc_ipam_pool_cidr_allocation" "dev_vpc2_cidr" {
   provider       = aws.delegated_account_us-west-2
-  ipam_pool_id   = var.ipam_pool_ids["us-west-2-prod-subnet2"]  
+  #ipam_pool_id   = var.ipam_pool_ids["us-west-2-prod-subnet2"]  
+  ipam_pool_id   = var.ipam_pool_ids["us-west-2-nonprod-subnet2"]
   netmask_length = 23
   description    = "CIDR allocation for dev_vpc2"
 }
