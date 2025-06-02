@@ -1,11 +1,11 @@
 # Get IPAM pool allocation for dev_vpc2
 resource "aws_vpc_ipam_pool_cidr_allocation" "dev_vpc2_cidr" {
   provider       = aws.delegated_account_us-west-2
-  ipam_pool_id   = var.ipam_pool_ids["us-west-2-prod-subnet2"]  
-  # ipam_pool_id   = var.ipam_pool_ids["us-west-2-nonprod-subnet2"]
-  netmask_length = 23
+  ipam_pool_id   = var.ipam_pool_ids["us-west-2-nonprod-subnet2"]  
+  netmask_length = var.vpc_cidr_netmask  # This will use /21 from variables
   description    = "CIDR allocation for dev_vpc2"
 }
+
 resource "aws_vpc" "dev_vpc2" {
   provider             = aws.delegated_account_us-west-2
   cidr_block           = aws_vpc_ipam_pool_cidr_allocation.dev_vpc2_cidr.cidr
@@ -24,7 +24,7 @@ resource "aws_subnet" "dev_vpc2_public_subnet_a" {
   cidr_block        = cidrsubnet(aws_vpc.dev_vpc2.cidr_block, var.subnet_prefix, 0)
 
   tags = {
-    Name = "dev-vpc2-public-subnet-use1-a"
+    Name = "dev-vpc2-public-subnet-usw2-a"
   }
 }
 
@@ -35,7 +35,7 @@ resource "aws_subnet" "dev_vpc2_public_subnet_b" {
   cidr_block        = cidrsubnet(aws_vpc.dev_vpc2.cidr_block, var.subnet_prefix, 1)
 
   tags = {
-    Name = "dev-vpc2-public-subnet-use1-b"
+    Name = "dev-vpc2-public-subnet-usw2-b"
   }
 }
 
@@ -47,7 +47,7 @@ resource "aws_subnet" "dev_vpc2_private_subnet_a" {
   cidr_block        = cidrsubnet(aws_vpc.dev_vpc2.cidr_block, var.subnet_prefix, 2)
 
   tags = {
-    Name = "dev-vpc2-private-subnet-use1-a"
+    Name = "dev-vpc2-private-subnet-usw2-a"
   }
 }
 
@@ -58,7 +58,7 @@ resource "aws_subnet" "dev_vpc2_private_subnet_b" {
   cidr_block        = cidrsubnet(aws_vpc.dev_vpc2.cidr_block, var.subnet_prefix, 3)
 
   tags = {
-    Name = "dev-vpc2-private-subnet-use1-b"
+    Name = "dev-vpc2-private-subnet-usw2-b"
   }
 }
 
@@ -136,7 +136,7 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "dev_vpc2_tgw_attachment" {
   transit_gateway_default_route_table_propagation = false
   
   tags = {
-    Name = "dev-vpc2-tgw-attachment-use1"
+    Name = "dev-vpc2-tgw-attachment-usw2"
   }
 }
 

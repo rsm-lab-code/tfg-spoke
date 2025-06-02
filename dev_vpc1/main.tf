@@ -26,7 +26,7 @@ resource "aws_subnet" "public_subnet_a" {
   cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, var.subnet_prefix, 0)
 
   tags = {
-    Name = "${var.vpc_name}-public-subnet-use1-a"
+    Name = "${var.vpc_name}-public-subnet-usw2-a"
   }
 }
 
@@ -37,7 +37,7 @@ resource "aws_subnet" "public_subnet_b" {
   cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, var.subnet_prefix, 1)
 
   tags = {
-    Name = "${var.vpc_name}-public-subnet-use1-b"
+    Name = "${var.vpc_name}-public-subnet-usw2-b"
   }
 }
 
@@ -49,7 +49,7 @@ resource "aws_subnet" "private_subnet_a" {
   cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, var.subnet_prefix, 2)
 
   tags = {
-    Name = "${var.vpc_name}-private-subnet-use1-a"
+    Name = "${var.vpc_name}-private-subnet-usw2-a"
   }
 }
 
@@ -60,7 +60,7 @@ resource "aws_subnet" "private_subnet_b" {
   cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, var.subnet_prefix, 3)
 
   tags = {
-    Name = "${var.vpc_name}-private-subnet-use1-b"
+    Name = "${var.vpc_name}-private-subnet-usw2-b"
   }
 }
 
@@ -138,7 +138,7 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "tgw_attachment" {
   transit_gateway_default_route_table_propagation = false
   
   tags = {
-    Name = "${var.vpc_name}-tgw-attachment-use1"
+    Name = "${var.vpc_name}-tgw-attachment-usw2"
   }
 }
 

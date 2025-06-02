@@ -4,6 +4,12 @@ variable "aws_regions" {
   default     = ["us-west-2", "us-east-1"]
 }
 
+variable "vpc_name" {
+  description = "Name of the VPC"
+  type        = string
+  
+}
+
 variable "delegated_account_id" {
   description = "AWS Account ID for delegated account where VPC is created"
   type        = string
@@ -17,21 +23,14 @@ variable "ipam_pool_ids" {
 variable "vpc_cidr_netmask" {
   description = "Netmask for the VPC CIDR allocation"
   type        = number
-  default     = 23
+  default     = 21  
 }
 
 variable "subnet_prefix" {
   description = "Additional bits for subnet CIDR division within VPC"
   type        = number
-  default     = 4
+  default     = 3  # This will create /24 subnets from a /21 VPC
 }
-
-variable "vpc_name" {
-  description = "Name of the VPC"
-  type        = string
-  default     = "nonprod-vpc1"
-}
-
 
 variable "transit_gateway_id" {
   description = "ID of the Transit Gateway to attach to"
@@ -43,8 +42,14 @@ variable "transit_gateway_route_table_id" {
   type        = string
 }
 
+variable "environment" {
+  description = "Environment type (prod, nonprod, dev)"
+  type        = string
+  
+}
+
 variable "spoke_vpc_routes" {
   description = "Map of other spoke VPC names to their CIDR blocks for routing"
-  type = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
 }
