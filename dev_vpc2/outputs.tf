@@ -1,0 +1,37 @@
+output "vpc_id" {
+  description = "ID of the created VPC"
+  value       = aws_vpc.dev_vpc2.id
+}
+
+output "vpc_cidr" {
+  description = "CIDR block of the created VPC"
+  value       = aws_vpc.dev_vpc2.cidr_block
+}
+
+output "public_subnet_ids" {
+  description = "IDs of the public subnets"
+  value       = [aws_subnet.dev_vpc2_public_subnet_a.id, aws_subnet.dev_vpc2_public_subnet_b.id]
+}
+
+output "private_subnet_ids" {
+  description = "IDs of the private subnets"
+  value       = [aws_subnet.dev_vpc2_private_subnet_a.id, aws_subnet.dev_vpc2_private_subnet_b.id]
+}
+
+output "route_table_ids" {
+  description = "IDs of the route tables"
+  value       = {
+    public  = aws_route_table.dev_vpc2_public_rt.id
+    private = aws_route_table.dev_vpc2_private_rt.id
+  }
+}
+
+output "tgw_attachment_id" {
+  description = "ID of the Transit Gateway attachment"
+  value       = aws_ec2_transit_gateway_vpc_attachment.dev_vpc2_tgw_attachment.id
+}
+
+output "internet_gateway_id" {
+  description = "ID of the Internet Gateway"
+  value       = aws_internet_gateway.dev_vpc2_igw.id
+}
