@@ -23,7 +23,8 @@ variable "main_rt_id" {
 
 variable "dev_rt_id" {
   description = "ID of the dev route table"
-  type        = string
+  type        = string 
+  default     = null
 }
 
 variable "nonprod_rt_id" {
