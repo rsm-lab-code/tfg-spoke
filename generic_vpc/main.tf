@@ -1,8 +1,47 @@
+# Get available AZs dynamically
+data "aws_availability_zones" "available" {
+  provider = aws.delegated_account_us-west-2
+  state    = "available"
+}
+
+# Define environment defaults 
+locals {
+  # Environment-based defaults
+  environment_defaults = {
+    dev = {
+      vpc_cidr_netmask = 21
+      subnet_prefix    = 3
+      create_igw       = true
+    }
+    nonprod = {
+      vpc_cidr_netmask = 21
+      subnet_prefix    = 3
+      create_igw       = true
+    }
+    prod = {
+      vpc_cidr_netmask = 21
+      subnet_prefix    = 3
+      create_igw       = true
+    }
+  }
+
+  # Get defaults for this environment
+  env_config = local.environment_defaults[var.environment]
+
+  # Use provided values or fall back to defaults
+  actual_vpc_cidr_netmask = var.vpc_cidr_netmask != null ? var.vpc_cidr_netmask : local.env_config.vpc_cidr_netmask
+  actual_subnet_prefix    = var.subnet_prefix != null ? var.subnet_prefix : local.env_config.subnet_prefix
+  actual_create_igw      = var.create_igw != null ? var.create_igw : local.env_config.create_igw
+  
+  # Use provided AZs or get first 2 available dynamically
+  actual_availability_zones = length(var.availability_zones) > 0 ? var.availability_zones : slice(data.aws_availability_zones.available.names, 0, 2)
+}
+
 # Get IPAM pool allocation for the VPC
 resource "aws_vpc_ipam_pool_cidr_allocation" "vpc_cidr" {
   provider       = aws.delegated_account_us-west-2
   ipam_pool_id   = var.ipam_pool_id
-  netmask_length = var.vpc_cidr_netmask
+  netmask_length = local.actual_vpc_cidr_netmask
   description    = "CIDR allocation for ${var.vpc_name}"
 }
 
@@ -22,13 +61,13 @@ resource "aws_vpc" "vpc" {
 # Create public subnets
 resource "aws_subnet" "public_subnet" {
   provider          = aws.delegated_account_us-west-2
-  count             = length(var.availability_zones)
+  count             = length(local.actual_availability_zones)
   vpc_id            = aws_vpc.vpc.id
-  availability_zone = var.availability_zones[count.index]
-  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, var.subnet_prefix, count.index)
+  availability_zone = local.actual_availability_zones[count.index]
+  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, local.actual_subnet_prefix, count.index)
 
   tags = merge(var.common_tags, {
-    Name = "${var.vpc_name}-public-subnet-${substr(var.availability_zones[count.index], -1, 1)}"
+    Name = "${var.vpc_name}-public-subnet-${substr(local.actual_availability_zones[count.index], -1, 1)}"
     Environment = var.environment
     Type = "public"
   })
@@ -37,13 +76,13 @@ resource "aws_subnet" "public_subnet" {
 # Create private subnets
 resource "aws_subnet" "private_subnet" {
   provider          = aws.delegated_account_us-west-2
-  count             = length(var.availability_zones)
+  count             = length(local.actual_availability_zones)
   vpc_id            = aws_vpc.vpc.id
-  availability_zone = var.availability_zones[count.index]
-  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, var.subnet_prefix, count.index + length(var.availability_zones))
+  availability_zone = local.actual_availability_zones[count.index]
+  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, local.actual_subnet_prefix, count.index + length(local.actual_availability_zones))
 
   tags = merge(var.common_tags, {
-    Name = "${var.vpc_name}-private-subnet-${substr(var.availability_zones[count.index], -1, 1)}"
+    Name = "${var.vpc_name}-private-subnet-${substr(local.actual_availability_zones[count.index], -1, 1)}"
     Environment = var.environment
     Type = "private"
   })
@@ -88,7 +127,7 @@ resource "aws_route_table_association" "private_rta" {
 # Create internet gateway for public access
 resource "aws_internet_gateway" "igw" {
   provider = aws.delegated_account_us-west-2
-  count    = var.create_igw ? 1 : 0
+  count    = local.actual_create_igw ? 1 : 0
   vpc_id   = aws_vpc.vpc.id
 
   tags = merge(var.common_tags, {
@@ -100,7 +139,7 @@ resource "aws_internet_gateway" "igw" {
 # Add default route via IGW for public subnets
 resource "aws_route" "public_rt_default" {
   provider               = aws.delegated_account_us-west-2
-  count                  = var.create_igw ? 1 : 0
+  count                  = local.actual_create_igw ? 1 : 0
   route_table_id         = aws_route_table.public_rt.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.igw[0].id

@@ -24,22 +24,23 @@ variable "ipam_pool_id" {
   type        = string
 }
 
+# Made these nullable with defaults handled by locals
 variable "vpc_cidr_netmask" {
-  description = "Netmask for the VPC CIDR allocation"
+  description = "Netmask for the VPC CIDR allocation. If null, uses environment default."
   type        = number
-  default     = 21
+  default     = null
 }
 
 variable "subnet_prefix" {
-  description = "Additional bits for subnet CIDR division within VPC"
+  description = "Additional bits for subnet CIDR division within VPC. If null, uses environment default."
   type        = number
-  default     = 3
+  default     = null
 }
 
 variable "availability_zones" {
-  description = "List of availability zones for subnet creation"
+  description = "List of availability zones for subnet creation. If empty, uses first 2 AZs dynamically."
   type        = list(string)
-  default     = ["us-west-2a", "us-west-2b"]
+  default     = []
 }
 
 variable "transit_gateway_id" {
@@ -59,9 +60,9 @@ variable "spoke_vpc_routes" {
 }
 
 variable "create_igw" {
-  description = "Whether to create an Internet Gateway for this VPC"
+  description = "Whether to create an Internet Gateway for this VPC. If null, uses environment default."
   type        = bool
-  default     = true
+  default     = null
 }
 
 variable "common_tags" {
