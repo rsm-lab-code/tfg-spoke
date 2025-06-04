@@ -33,10 +33,10 @@ output "tgw_attachment_id" {
 
 output "internet_gateway_id" {
   description = "ID of the Internet Gateway (if created)"
-  value       = var.create_igw ? aws_internet_gateway.igw[0].id : null
+  value       = local.actual_create_igw ? aws_internet_gateway.igw[0].id : null
 }
 
 output "availability_zones" {
   description = "Availability zones used by this VPC"
-  value       = var.availability_zones
+  value       = local.actual_availability_zones
 }
