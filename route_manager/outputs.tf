@@ -51,7 +51,7 @@ output "total_routes_created" {
     total_routes      = (
       length(aws_ec2_transit_gateway_route.inspection_rt_spoke_routes) +
       length(aws_ec2_transit_gateway_route.main_rt_spoke_routes) +
-      length(aws_ec2_transit_gateway_route.dev_rt_spoke_routes) +
+      #length(aws_ec2_transit_gateway_route.dev_rt_spoke_routes) +
       length(aws_ec2_transit_gateway_route.nonprod_rt_spoke_routes) +
       length(aws_ec2_transit_gateway_route.prod_rt_spoke_routes)
     )
@@ -68,8 +68,8 @@ output "routes_by_vpc" {
       routes_created_in = compact([
         "inspection_rt",
         "main_rt",
-        contains(keys(aws_ec2_transit_gateway_route.dev_rt_spoke_routes), vpc_name) ? "dev_rt" : "",
-        # contains(keys(aws_ec2_transit_gateway_route.nonprod_rt_spoke_routes), vpc_name) ? "nonprod_rt" : ""
+        # contains(keys(aws_ec2_transit_gateway_route.dev_rt_spoke_routes), vpc_name) ? "dev_rt" : "",
+        contains(keys(aws_ec2_transit_gateway_route.nonprod_rt_spoke_routes), vpc_name) ? "nonprod_rt" : ""
         contains(keys(aws_ec2_transit_gateway_route.prod_rt_spoke_routes), vpc_name) ? "prod_rt" : ""
       ])
     }
