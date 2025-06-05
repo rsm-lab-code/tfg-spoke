@@ -52,7 +52,7 @@ output "total_routes_created" {
       length(aws_ec2_transit_gateway_route.inspection_rt_spoke_routes) +
       length(aws_ec2_transit_gateway_route.main_rt_spoke_routes) +
       length(aws_ec2_transit_gateway_route.dev_rt_spoke_routes) +
-      length(aws_ec2_transit_gateway_route.nonprod_rt_spoke_routes)
+      length(aws_ec2_transit_gateway_route.nonprod_rt_spoke_routes) +
       length(aws_ec2_transit_gateway_route.prod_rt_spoke_routes)
     )
   }
