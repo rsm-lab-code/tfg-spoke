@@ -31,3 +31,9 @@ variable "nonprod_rt_id" {
   description = "ID of the nonprod route table"
   type        = string
 }
+
+
+variable "prod_rt_id" {
+  description = "ID of the Production Transit Gateway route table"
+  type        = string
+}
