@@ -16,7 +16,7 @@ locals {
       create_igw       = true
     }
     prod = {
-      vpc_cidr_netmask = 21
+      vpc_cidr_netmask = 23
       #subnet_prefix    = 3
       public_subnet_prefix = 26  # /26 public subnets 
       private_subnet_prefix = 25 # /25 private subnets
