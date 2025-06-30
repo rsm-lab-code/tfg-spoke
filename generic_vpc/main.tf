@@ -8,19 +8,18 @@ data "aws_availability_zones" "available" {
 locals {
   # Environment-based defaults
   environment_defaults = {
-    dev = {
-      vpc_cidr_netmask = 21
-      subnet_prefix    = 3
-      create_igw       = true
-    }
     nonprod = {
-      vpc_cidr_netmask = 21
-      subnet_prefix    = 3
+      vpc_cidr_netmask = 23
+      # subnet_prefix    = 3
+      public_subnet_prefix = 26  # /26 public subnets 
+      private_subnet_prefix = 25 # /25 private subnets
       create_igw       = true
     }
     prod = {
       vpc_cidr_netmask = 21
-      subnet_prefix    = 3
+      #subnet_prefix    = 3
+      public_subnet_prefix = 26  # /26 public subnets 
+      private_subnet_prefix = 25 # /25 private subnets
       create_igw       = true
     }
   }
@@ -29,10 +28,11 @@ locals {
   env_config = local.environment_defaults[var.environment]
 
   # Use provided values or fall back to defaults
-  actual_vpc_cidr_netmask = var.vpc_cidr_netmask != null ? var.vpc_cidr_netmask : local.env_config.vpc_cidr_netmask
-  actual_subnet_prefix    = var.subnet_prefix != null ? var.subnet_prefix : local.env_config.subnet_prefix
-  actual_create_igw      = var.create_igw != null ? var.create_igw : local.env_config.create_igw
-  
+  actual_vpc_cidr_netmask      = var.vpc_cidr_netmask != null ? var.vpc_cidr_netmask : local.env_config.vpc_cidr_netmask
+  actual_public_subnet_prefix  = var.public_subnet_prefix != null ? var.public_subnet_prefix : local.env_config.public_subnet_prefix
+  actual_private_subnet_prefix = var.private_subnet_prefix != null ? var.private_subnet_prefix : local.env_config.private_subnet_prefix
+  actual_create_igw           = var.create_igw != null ? var.create_igw : local.env_config.create_igw
+
   # Use provided AZs or get first 2 available dynamically
   actual_availability_zones = length(var.availability_zones) > 0 ? var.availability_zones : slice(data.aws_availability_zones.available.names, 0, 2)
 }
@@ -60,32 +60,35 @@ resource "aws_vpc" "vpc" {
 
 # Create public subnets
 resource "aws_subnet" "public_subnet" {
-  provider          = aws.delegated_account_us-west-2
+ provider          = aws.delegated_account_us-west-2
   count             = length(local.actual_availability_zones)
   vpc_id            = aws_vpc.vpc.id
   availability_zone = local.actual_availability_zones[count.index]
-  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, local.actual_subnet_prefix, count.index)
+  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, local.actual_public_subnet_prefix, count.index)
 
   tags = merge(var.common_tags, {
     Name = "${var.vpc_name}-public-subnet-${substr(local.actual_availability_zones[count.index], -1, 1)}"
     Environment = var.environment
     Type = "public"
   })
+
 }
 
 # Create private subnets
 resource "aws_subnet" "private_subnet" {
-  provider          = aws.delegated_account_us-west-2
+
+ provider          = aws.delegated_account_us-west-2
   count             = length(local.actual_availability_zones)
   vpc_id            = aws_vpc.vpc.id
   availability_zone = local.actual_availability_zones[count.index]
-  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, local.actual_subnet_prefix, count.index + length(local.actual_availability_zones))
+  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, local.actual_private_subnet_prefix, count.index + 4)
 
   tags = merge(var.common_tags, {
     Name = "${var.vpc_name}-private-subnet-${substr(local.actual_availability_zones[count.index], -1, 1)}"
     Environment = var.environment
     Type = "private"
   })
+
 }
 
 # Create route tables for public and private subnets

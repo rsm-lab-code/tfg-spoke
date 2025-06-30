@@ -72,3 +72,16 @@ variable "common_tags" {
     ManagedBy = "terraform"
   }
 }
+
+#New variable for spoke vpc
+variable "public_subnet_prefix" {
+  description = "Additional bits for public subnet CIDR division within VPC"
+  type        = number
+  default     = null  # Will use environment default if not specified
+}
+
+variable "private_subnet_prefix" {
+  description = "Additional bits for private subnet CIDR division within VPC"
+  type        = number
+  default     = null  # Will use environment default if not specified
+}
