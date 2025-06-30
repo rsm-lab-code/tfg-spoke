@@ -81,7 +81,7 @@ resource "aws_subnet" "private_subnet" {
   count             = length(local.actual_availability_zones)
   vpc_id            = aws_vpc.vpc.id
   availability_zone = local.actual_availability_zones[count.index]
-  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, local.actual_private_subnet_prefix, count.index + 4)
+  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, local.actual_private_subnet_prefix, count.index + 2)
 
   tags = merge(var.common_tags, {
     Name = "${var.vpc_name}-private-subnet-${substr(local.actual_availability_zones[count.index], -1, 1)}"
