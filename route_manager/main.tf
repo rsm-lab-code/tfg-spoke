@@ -21,9 +21,10 @@ resource "aws_ec2_transit_gateway_route" "main_rt_spoke_routes" {
 
 resource "aws_ec2_transit_gateway_route" "nonprod_rt_spoke_routes" {
   provider                       = aws.delegated_account_us-west-2
-  for_each = {
-    for name, vpc in var.spoke_vpc_attachments : name => vpc
-    if lookup(var.vpc_environments, name, "") == "nonprod"
+
+  for_each = var.enable_environment_specific_routes ? {
+  for name, vpc in var.spoke_vpc_attachments : name => vpc
+  if lookup(var.vpc_environments, name, "") == "nonprod"
   } : {}
 
   destination_cidr_block         = each.value.cidr_block
@@ -33,9 +34,9 @@ resource "aws_ec2_transit_gateway_route" "nonprod_rt_spoke_routes" {
 
 resource "aws_ec2_transit_gateway_route" "prod_rt_spoke_routes" {
   provider                       = aws.delegated_account_us-west-2
-  for_each = {
-    for name, vpc in var.spoke_vpc_attachments : name => vpc
-    if lookup(var.vpc_environments, name, "") == "prod"
+  for_each = var.enable_environment_specific_routes ? {
+  for name, vpc in var.spoke_vpc_attachments : name => vpc
+  if lookup(var.vpc_environments, name, "") == "prod"
   } : {}
 
   destination_cidr_block         = each.value.cidr_block
