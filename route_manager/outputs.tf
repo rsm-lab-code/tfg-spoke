@@ -75,3 +75,12 @@ output "routes_by_vpc" {
     }
   }
 }
+
+########################################################
+#Blackhole output
+output "environment_specific_routes_enabled" {
+  description = "Whether environment-specific routes are enabled"
+  value       = var.enable_environment_specific_routes
+}
+
+########################################################

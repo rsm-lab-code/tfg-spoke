@@ -37,3 +37,14 @@ variable "prod_rt_id" {
   description = "ID of the Production Transit Gateway route table"
   type        = string
 }
+
+
+########################################################
+#Blackhole variable 
+variable "enable_environment_specific_routes" {
+  description = "Whether to create specific routes for each VPC in environment route tables"
+  type        = bool
+  default     = true  
+}
+
+########################################################
