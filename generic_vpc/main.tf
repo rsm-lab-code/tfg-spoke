@@ -100,7 +100,7 @@ resource "aws_subnet" "tgw_subnet" {
   count             = length(local.actual_availability_zones)
   vpc_id            = aws_vpc.vpc.id
   availability_zone = local.actual_availability_zones[count.index]
-  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, local.actual_tgw_subnet_prefix, count.index + 6)
+  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, local.actual_tgw_subnet_prefix, count.index + 10)
 
   tags = merge(var.common_tags, {
     Name = "${var.vpc_name}-tgw-subnet-${substr(local.actual_availability_zones[count.index], -1, 1)}"
