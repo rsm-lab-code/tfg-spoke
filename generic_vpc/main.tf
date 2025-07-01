@@ -184,14 +184,6 @@ resource "aws_route" "public_rt_default" {
   gateway_id             = aws_internet_gateway.igw[0].id
 }
 
-# Route from TGW subnets to private subnets
-resource "aws_route" "tgw_to_vpc" {
-  provider               = aws.delegated_account_us-west-2
-  route_table_id         = aws_route_table.tgw_rt.id
-  destination_cidr_block = aws_vpc.vpc.cidr_block
-  gateway_id       = "local"
-}
-
 # Default route from TGW subnets to Transit Gateway
 resource "aws_route" "tgw_rt_default" {
   provider               = aws.delegated_account_us-west-2
