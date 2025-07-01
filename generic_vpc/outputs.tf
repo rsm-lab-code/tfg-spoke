@@ -40,3 +40,15 @@ output "availability_zones" {
   description = "Availability zones used by this VPC"
   value       = local.actual_availability_zones
 }
+
+#############################
+
+output "tgw_subnet_ids" {
+  description = "IDs of the TGW subnets"
+  value       = aws_subnet.tgw_subnet[*].id
+}
+
+output "tgw_route_table_id" {
+  description = "ID of the TGW route table"
+  value       = aws_route_table.tgw_rt.id
+}

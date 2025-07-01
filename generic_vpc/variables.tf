@@ -85,3 +85,11 @@ variable "private_subnet_prefix" {
   type        = number
   default     = null  # Will use environment default if not specified
 }
+
+#########
+
+variable "tgw_subnet_prefix" {
+  description = "Additional bits for TGW subnet CIDR division within VPC"
+  type        = number
+  default     = null  
+}
