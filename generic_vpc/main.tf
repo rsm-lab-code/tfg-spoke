@@ -37,7 +37,8 @@ locals {
 
   # Use provided AZs or get first 2 available dynamically
   actual_availability_zones = length(var.availability_zones) > 0 ? var.availability_zones : slice(data.aws_availability_zones.available.names, 0, 2)
-  actual_tgw_subnet_prefix = var.tgw_subnet_prefix != null ? var.tgw_subnet_prefix : local.env_config.tgw_subnet_prefix
+  #actual_tgw_subnet_prefix = var.tgw_subnet_prefix != null ? var.tgw_subnet_prefix : local.env_config.tgw_subnet_prefix
+  actual_tgw_subnet_prefix = 28 - tonumber(split("/", aws_vpc.vpc.cidr_block)[1])
 }
 
 # Get IPAM pool allocation for the VPC
