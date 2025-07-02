@@ -94,6 +94,12 @@ variable "tgw_subnet_prefix" {
 }
 
 ###################
+variable "enable_flow_logs" {
+  description = "Whether to enable VPC Flow Logs"
+  type        = bool
+  default     = false
+}
+
 variable "flow_logs_s3_bucket_arn" {
   description = "ARN of the S3 bucket for VPC Flow Logs"
   type        = string
