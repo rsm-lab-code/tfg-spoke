@@ -246,6 +246,7 @@ resource "aws_route" "public_rt_to_spoke_vpcs" {
 # Enable VPC Flow Logs for Spoke VPC
 resource "aws_flow_log" "vpc_flow_log" {
   provider          = aws.delegated_account_us-west-2
+  iam_role_arn         = "arn:aws:iam::${var.delegated_account_id}:role/vpc-flow-logs-role"
   log_destination   = aws_cloudwatch_log_group.flow_log_group.arn
   log_destination_type = "cloud-watch-logs"
   traffic_type      = "ALL"
