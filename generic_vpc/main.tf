@@ -243,3 +243,18 @@ resource "aws_route" "public_rt_to_spoke_vpcs" {
 
 
 ##########################################################################
+
+# Set up Flow Logs for Spoke VPC
+resource "aws_flow_log" "vpc_flow_log" {
+  provider             = aws.delegated_account_us-west-2
+  count                = var.flow_logs_s3_bucket_arn != "" ? 1 : 0
+  log_destination      = var.flow_logs_s3_bucket_arn
+  log_destination_type = "s3"
+  traffic_type         = "ALL"
+  vpc_id               = aws_vpc.vpc.id
+  
+  tags = merge(var.common_tags, {
+    Name = "${var.vpc_name}-flow-log"
+    Environment = var.environment
+  })
+}
