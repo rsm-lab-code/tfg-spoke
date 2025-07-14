@@ -268,7 +268,7 @@ resource "aws_network_acl_rule" "tgw_nacl_ingress" {
   egress         = false
 }
 
-# NACL Egress Rules (mirror the ingress rules)
+# NACL Egress Rules 
 resource "aws_network_acl_rule" "tgw_nacl_egress" {
   provider = aws.delegated_account_us-west-2
   count = var.environment == "prod" ? 2 : 3
