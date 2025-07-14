@@ -244,6 +244,49 @@ resource "aws_route" "public_rt_to_spoke_vpcs" {
 
 ##########################################################################
 
+# Environment Isolation NACLs for TGW Subnets
+resource "aws_network_acl" "tgw_subnet_nacl" {
+  provider = aws.delegated_account_us-west-2
+  vpc_id   = aws_vpc.vpc.id
+
+  tags = merge(var.common_tags, {
+    Name = "${var.vpc_name}-tgw-nacl"
+    Environment = var.environment
+  })
+}
+
+# NACL Rules - Dynamic based on environment
+resource "aws_network_acl_rule" "tgw_nacl_ingress" {
+  provider = aws.delegated_account_us-west-2
+  count = var.environment == "prod" ? 2 : 3
+
+  network_acl_id = aws_network_acl.tgw_subnet_nacl.id
+  rule_number    = var.environment == "prod" ? (count.index == 0 ? 100 : 200) : (count.index == 0 ? 100 : count.index == 1 ? 200 : 300)
+  protocol       = "-1"
+  rule_action    = var.environment == "prod" ? (count.index == 0 ? "deny" : "allow") : (count.index == 0 ? "allow" : count.index == 1 ? "deny" : "allow")
+  cidr_block     = var.environment == "prod" ? (count.index == 0 ? "10.0.128.0/17" : "0.0.0.0/0") : (count.index == 0 ? "10.0.0.0/24" : count.index == 1 ? "10.0.0.0/17" : "0.0.0.0/0")
+}
+
+resource "aws_network_acl_rule" "tgw_nacl_egress" {
+  provider = aws.delegated_account_us-west-2
+  count = var.environment == "prod" ? 2 : 3
+
+  network_acl_id = aws_network_acl.tgw_subnet_nacl.id
+  rule_number    = var.environment == "prod" ? (count.index == 0 ? 100 : 200) : (count.index == 0 ? 100 : count.index == 1 ? 200 : 300)
+  protocol       = "-1"
+  rule_action    = var.environment == "prod" ? (count.index == 0 ? "deny" : "allow") : (count.index == 0 ? "allow" : count.index == 1 ? "deny" : "allow")
+  cidr_block     = var.environment == "prod" ? (count.index == 0 ? "10.0.128.0/17" : "0.0.0.0/0") : (count.index == 0 ? "10.0.0.0/24" : count.index == 1 ? "10.0.0.0/17" : "0.0.0.0/0")
+}
+
+# Associate TGW subnets with the NACL
+resource "aws_network_acl_association" "tgw_subnet_nacl_association" {
+  provider       = aws.delegated_account_us-west-2
+  count          = length(aws_subnet.tgw_subnet)
+  network_acl_id = aws_network_acl.tgw_subnet_nacl.id
+  subnet_id      = aws_subnet.tgw_subnet[count.index].id
+}
+
+
 # Set up Flow Logs for Spoke VPC
 resource "aws_flow_log" "vpc_flow_log" {
   provider             = aws.delegated_account_us-west-2
