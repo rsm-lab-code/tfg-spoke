@@ -265,6 +265,7 @@ resource "aws_network_acl_rule" "tgw_nacl_ingress" {
   protocol       = "-1"
   rule_action    = var.environment == "prod" ? (count.index == 0 ? "deny" : "allow") : (count.index == 0 ? "allow" : count.index == 1 ? "deny" : "allow")
   cidr_block     = var.environment == "prod" ? (count.index == 0 ? "10.0.128.0/17" : "0.0.0.0/0") : (count.index == 0 ? "10.0.0.0/24" : count.index == 1 ? "10.0.0.0/17" : "0.0.0.0/0")
+  egress         = false
 }
 
 resource "aws_network_acl_rule" "tgw_nacl_egress" {
@@ -276,6 +277,7 @@ resource "aws_network_acl_rule" "tgw_nacl_egress" {
   protocol       = "-1"
   rule_action    = var.environment == "prod" ? (count.index == 0 ? "deny" : "allow") : (count.index == 0 ? "allow" : count.index == 1 ? "deny" : "allow")
   cidr_block     = var.environment == "prod" ? (count.index == 0 ? "10.0.128.0/17" : "0.0.0.0/0") : (count.index == 0 ? "10.0.0.0/24" : count.index == 1 ? "10.0.0.0/17" : "0.0.0.0/0")
+  egress         = true
 }
 
 # Associate TGW subnets with the NACL
