@@ -255,7 +255,7 @@ resource "aws_network_acl" "tgw_subnet_nacl" {
   })
 }
 
-# NACL Rules - Dynamic based on environment
+# NACL Ingress Rules
 resource "aws_network_acl_rule" "tgw_nacl_ingress" {
   provider = aws.delegated_account_us-west-2
   count = var.environment == "prod" ? 2 : 3
@@ -268,6 +268,7 @@ resource "aws_network_acl_rule" "tgw_nacl_ingress" {
   egress         = false
 }
 
+# NACL Egress Rules (mirror the ingress rules)
 resource "aws_network_acl_rule" "tgw_nacl_egress" {
   provider = aws.delegated_account_us-west-2
   count = var.environment == "prod" ? 2 : 3
@@ -287,7 +288,6 @@ resource "aws_network_acl_association" "tgw_subnet_nacl_association" {
   network_acl_id = aws_network_acl.tgw_subnet_nacl.id
   subnet_id      = aws_subnet.tgw_subnet[count.index].id
 }
-
 
 # Set up Flow Logs for Spoke VPC
 resource "aws_flow_log" "vpc_flow_log" {
