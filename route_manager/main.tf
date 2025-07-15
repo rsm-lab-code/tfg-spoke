@@ -18,7 +18,7 @@ resource "aws_ec2_transit_gateway_route" "main_rt_spoke_routes" {
   transit_gateway_route_table_id = var.main_rt_id
 }
 
-
+#############################################################################################################
 resource "aws_ec2_transit_gateway_route" "nonprod_rt_spoke_routes" {
   provider                       = aws.delegated_account_us-west-2
 
@@ -43,3 +43,4 @@ resource "aws_ec2_transit_gateway_route" "prod_rt_spoke_routes" {
   transit_gateway_attachment_id  = each.value.attachment_id
   transit_gateway_route_table_id = var.prod_rt_id
 }
+###############################################################################################################
