@@ -254,12 +254,12 @@ resource "aws_route_table_association" "tgw_rta" {
 #################################################################################################################
 
 # Environment Isolation NACLs for TGW Subnets
-resource "aws_network_acl" "tgw_subnet_nacl" {
+resource "aws_network_acl" "vpc_nacl" {
   provider = aws.delegated_account_us-west-2
   vpc_id   = aws_vpc.vpc.id
 
   tags = merge(var.common_tags, {
-    Name = "${var.vpc_name}-tgw-nacl"
+    Name = "${var.vpc_name}-vpc-nacl"
     Environment = var.environment
   })
 }
@@ -269,7 +269,7 @@ resource "aws_network_acl_rule" "tgw_nacl_ingress" {
   provider = aws.delegated_account_us-west-2
   count = var.environment == "prod" ? 2 : 3
 
-  network_acl_id = aws_network_acl.tgw_subnet_nacl.id
+  network_acl_id = aws_network_acl.vpc_nacl.id
   rule_number    = var.environment == "prod" ? (count.index == 0 ? 100 : 200) : (count.index == 0 ? 100 : count.index == 1 ? 200 : 300)
   protocol       = "-1"
   rule_action    = var.environment == "prod" ? (count.index == 0 ? "deny" : "allow") : (count.index == 0 ? "allow" : count.index == 1 ? "deny" : "allow")
@@ -282,7 +282,7 @@ resource "aws_network_acl_rule" "tgw_nacl_egress" {
   provider = aws.delegated_account_us-west-2
   count = var.environment == "prod" ? 2 : 3
 
-  network_acl_id = aws_network_acl.tgw_subnet_nacl.id
+  network_acl_id = aws_network_acl.vpc_nacl.id
   rule_number    = var.environment == "prod" ? (count.index == 0 ? 100 : 200) : (count.index == 0 ? 100 : count.index == 1 ? 200 : 300)
   protocol       = "-1"
   rule_action    = var.environment == "prod" ? (count.index == 0 ? "deny" : "allow") : (count.index == 0 ? "allow" : count.index == 1 ? "deny" : "allow")
@@ -294,8 +294,24 @@ resource "aws_network_acl_rule" "tgw_nacl_egress" {
 resource "aws_network_acl_association" "tgw_subnet_nacl_association" {
   provider       = aws.delegated_account_us-west-2
   count          = length(aws_subnet.tgw_subnet)
-  network_acl_id = aws_network_acl.tgw_subnet_nacl.id
+  network_acl_id = aws_network_acl.vpc_nacl.id
   subnet_id      = aws_subnet.tgw_subnet[count.index].id
+}
+
+# Associate PUBLIC subnets with the NACL
+resource "aws_network_acl_association" "public_subnet_nacl_association" {
+  provider       = aws.delegated_account_us-west-2
+  count          = length(aws_subnet.public_subnet)
+  network_acl_id = aws_network_acl.vpc_nacl.id
+  subnet_id      = aws_subnet.public_subnet[count.index].id
+}
+
+# Associate PRIVATE subnets with the NACL
+resource "aws_network_acl_association" "private_subnet_nacl_association" {
+  provider       = aws.delegated_account_us-west-2
+  count          = length(aws_subnet.private_subnet)
+  network_acl_id = aws_network_acl.vpc_nacl.id
+  subnet_id      = aws_subnet.private_subnet[count.index].id
 }
 
 #################################################################################################################
