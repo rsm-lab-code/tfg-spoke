@@ -13,7 +13,9 @@ locals {
       # subnet_prefix    = 3
       public_subnet_prefix = 3  # /26 public subnets 
       private_subnet_prefix = 2  # /25 private subnets
+     ################################################################
       tgw_subnet_prefix = 3  
+     ################################################################
       create_igw       = true
     }
     prod = {
@@ -21,7 +23,9 @@ locals {
       #subnet_prefix    = 3
       public_subnet_prefix = 3  # /26 public subnets 
       private_subnet_prefix = 2 # /25 private subnets
+    ################################################################
       tgw_subnet_prefix = 3  
+    ################################################################
       create_igw       = true
     }
   }
@@ -95,21 +99,6 @@ resource "aws_subnet" "private_subnet" {
 
 }
 
-#Create TGW Subnets
-resource "aws_subnet" "tgw_subnet" {
-  provider          = aws.delegated_account_us-west-2
-  count             = length(local.actual_availability_zones)
-  vpc_id            = aws_vpc.vpc.id
-  availability_zone = local.actual_availability_zones[count.index]
-  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, local.actual_tgw_subnet_prefix, count.index + 10)
-
-  tags = merge(var.common_tags, {
-    Name = "${var.vpc_name}-tgw-subnet-${substr(local.actual_availability_zones[count.index], -1, 1)}"
-    Environment = var.environment
-    Type = "tgw"
-  })
-}
-
 # Create route tables for public and private subnets
 resource "aws_route_table" "public_rt" {
   provider = aws.delegated_account_us-west-2
@@ -131,17 +120,6 @@ resource "aws_route_table" "private_rt" {
   })
 }
 
-#Create TGW Route Table
-resource "aws_route_table" "tgw_rt" {
-  provider = aws.delegated_account_us-west-2
-  vpc_id   = aws_vpc.vpc.id
-
-  tags = merge(var.common_tags, {
-    Name = "${var.vpc_name}-tgw-rt"
-    Environment = var.environment
-  })
-}
-
 # Associate subnets with route tables
 resource "aws_route_table_association" "public_rta" {
   provider       = aws.delegated_account_us-west-2
@@ -157,13 +135,6 @@ resource "aws_route_table_association" "private_rta" {
   route_table_id = aws_route_table.private_rt.id
 }
 
-#TGW subnet association
-resource "aws_route_table_association" "tgw_rta" {
-  provider       = aws.delegated_account_us-west-2
-  count          = length(aws_subnet.tgw_subnet)
-  subnet_id      = aws_subnet.tgw_subnet[count.index].id
-  route_table_id = aws_route_table.tgw_rt.id
-}
 # Create internet gateway for public access
 resource "aws_internet_gateway" "igw" {
   provider = aws.delegated_account_us-west-2
@@ -197,7 +168,9 @@ resource "aws_route" "tgw_rt_default" {
 resource "aws_ec2_transit_gateway_vpc_attachment" "tgw_attachment" {
   provider           = aws.delegated_account_us-west-2
   #subnet_ids         = aws_subnet.private_subnet[*].id
+  ##########################################################################
   subnet_ids         = aws_subnet.tgw_subnet[*].id
+  ##########################################################################
   transit_gateway_id = var.transit_gateway_id
   vpc_id             = aws_vpc.vpc.id
   
@@ -242,7 +215,43 @@ resource "aws_route" "public_rt_to_spoke_vpcs" {
 }
 
 
-##########################################################################
+#################################################################################################################
+#Create TGW Subnets
+resource "aws_subnet" "tgw_subnet" {
+  provider          = aws.delegated_account_us-west-2
+  count             = length(local.actual_availability_zones)
+  vpc_id            = aws_vpc.vpc.id
+  availability_zone = local.actual_availability_zones[count.index]
+  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, local.actual_tgw_subnet_prefix, count.index + 10)
+
+  tags = merge(var.common_tags, {
+    Name = "${var.vpc_name}-tgw-subnet-${substr(local.actual_availability_zones[count.index], -1, 1)}"
+    Environment = var.environment
+    Type = "tgw"
+  })
+}
+
+#Create TGW Route Table
+resource "aws_route_table" "tgw_rt" {
+  provider = aws.delegated_account_us-west-2
+  vpc_id   = aws_vpc.vpc.id
+
+  tags = merge(var.common_tags, {
+    Name = "${var.vpc_name}-tgw-rt"
+    Environment = var.environment
+  })
+}
+
+
+#TGW subnet association
+resource "aws_route_table_association" "tgw_rta" {
+  provider       = aws.delegated_account_us-west-2
+  count          = length(aws_subnet.tgw_subnet)
+  subnet_id      = aws_subnet.tgw_subnet[count.index].id
+  route_table_id = aws_route_table.tgw_rt.id
+}
+
+#################################################################################################################
 
 # Environment Isolation NACLs for TGW Subnets
 resource "aws_network_acl" "tgw_subnet_nacl" {
@@ -289,6 +298,8 @@ resource "aws_network_acl_association" "tgw_subnet_nacl_association" {
   subnet_id      = aws_subnet.tgw_subnet[count.index].id
 }
 
+#################################################################################################################
+
 # Set up Flow Logs for Spoke VPC
 resource "aws_flow_log" "vpc_flow_log" {
   provider             = aws.delegated_account_us-west-2
@@ -303,3 +314,4 @@ resource "aws_flow_log" "vpc_flow_log" {
     Environment = var.environment
   })
 }
+#################################################################################################################
